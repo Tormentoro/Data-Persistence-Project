@@ -380,6 +380,9 @@ MonoBehaviour:
   score2: 0
   thirdPlayerName: 
   score3: 0
+  easyPlays: 0
+  normalPlays: 0
+  hardPlays: 0
 --- !u!1 &455529321
 GameObject:
   m_ObjectHideFlags: 0
@@ -764,6 +767,9 @@ MonoBehaviour:
   score2: 0
   thirdPlayerName: 
   score3: 0
+  easyPlays: 0
+  normalPlays: 0
+  hardPlays: 0
 --- !u!4 &698784483
 Transform:
   m_ObjectHideFlags: 0
@@ -1425,7 +1431,7 @@ MeshCollider:
   m_Enabled: 1
   serializedVersion: 4
   m_Convex: 1
-  m_CookingOptions: 30
+  m_CookingOptions: -1
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1269285948
 MeshRenderer:

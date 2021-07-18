@@ -73,6 +73,18 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                 m_GameOver = false;
                 m_Started = false;
+                if (MainManager.MMinstance.gameMode == "easy")
+                {
+                    MainManager.MMinstance.easyPlays += 1;
+                }
+                if (MainManager.MMinstance.gameMode == "normal")
+                {
+                    MainManager.MMinstance.normalPlays += 1;
+                }
+                if (MainManager.MMinstance.gameMode == "hard")
+                {
+                    MainManager.MMinstance.hardPlays += 1;
+                }
             }
 
         }
