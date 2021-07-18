@@ -26,9 +26,9 @@ public class Ball : MonoBehaviour
         }
 
         //max velocity
-        if (velocity.magnitude > 3.0f)
+        if (velocity.magnitude > (3.0f * MainManager.MMinstance.difficulty))
         {
-            velocity = velocity.normalized * 3.0f;
+            velocity = velocity.normalized * (3.0f * MainManager.MMinstance.difficulty);
         }
 
         m_Rigidbody.velocity = velocity;

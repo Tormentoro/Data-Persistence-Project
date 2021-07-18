@@ -2,75 +2,138 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using System.IO;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class MainManager : MonoBehaviour
 {
-    public Brick BrickPrefab;
-    public int LineCount = 6;
-    public Rigidbody Ball;
+    public static MainManager MMinstance;
+       
+    [Header("Storing Data")]
+    
+    public string gameMode;
 
-    public Text ScoreText;
-    public GameObject GameOverText;
-    
-    private bool m_Started = false;
-    private int m_Points;
-    
-    private bool m_GameOver = false;
+    public int bestScore;
+    public float difficulty=1;
 
-    
-    // Start is called before the first frame update
-    void Start()
+    public string playerName;
+
+    public string firstPlayerName = "empty";
+    public int score1;
+    public string secondPlayerName = "empty";
+    public int score2;
+    public string thirdPlayerName = "empty";
+    public int score3;
+
+    public int easyPlays;
+    public int normalPlays;
+    public int hardPlays;
+
+    private void Awake()
     {
-        const float step = 0.6f;
-        int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
-        for (int i = 0; i < LineCount; ++i)
+        if (MMinstance != null)
         {
-            for (int x = 0; x < perLine; ++x)
-            {
-                Vector3 position = new Vector3(-1.5f + step * x, 2.5f + i * 0.3f, 0);
-                var brick = Instantiate(BrickPrefab, position, Quaternion.identity);
-                brick.PointValue = pointCountArray[i];
-                brick.onDestroyed.AddListener(AddPoint);
-            }
+            Destroy(gameObject);
+            return;
         }
+        MMinstance = this;
+        DontDestroyOnLoad(gameObject);
+
+        LoadGameData();
+    }
+    public void StartGame()
+    {
+        SceneManager.LoadScene(1);
+    }
+    public void ExitGame()
+    {
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
+    }
+    public void HighScore()
+    {
+        SceneManager.LoadScene(2);
+    }
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+    public void ResetAllScore()
+    {
+        easyPlays = 0;
+        normalPlays = 0;
+        hardPlays = 0;
+
+        firstPlayerName = "empty";
+        secondPlayerName = "empty";
+        thirdPlayerName = "empty";
+
+        score1 = 0;
+        score2 = 0;
+        score3 = 0;
+
+        SceneManager.LoadScene(0);
     }
 
-    private void Update()
-    {
-        if (!m_Started)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                m_Started = true;
-                float randomDirection = Random.Range(-1.0f, 1.0f);
-                Vector3 forceDir = new Vector3(randomDirection, 1, 0);
-                forceDir.Normalize();
+[System.Serializable]
+class SaveData
+{
+    public int score1;
+    public int score2;
+    public int score3;
 
-                Ball.transform.SetParent(null);
-                Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
-            }
-        }
-        else if (m_GameOver)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            }
-        }
+    public string firstPlayerName;
+    public string secondPlayerName;
+    public string thirdPlayerName;
+
+
+    public int easyPlays;
+    public int normalPlays;
+    public int hardPlays;
+}
+    public void SaveGameData()
+    {
+        SaveData data = new SaveData();
+
+        data.easyPlays = easyPlays;
+        data.normalPlays = normalPlays;
+        data.hardPlays = hardPlays;
+
+        data.firstPlayerName = firstPlayerName;
+        data.secondPlayerName = secondPlayerName;
+        data.thirdPlayerName = thirdPlayerName;
+
+        data.score1 = score1;
+        data.score2 = score2;
+        data.score3 = score3;
+
+        string json = JsonUtility.ToJson(data);
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
-
-    void AddPoint(int point)
+    public void LoadGameData()
     {
-        m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
-    }
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-    public void GameOver()
-    {
-        m_GameOver = true;
-        GameOverText.SetActive(true);
+            easyPlays = data.easyPlays;
+            normalPlays = data.normalPlays;
+            hardPlays = data.hardPlays;
+
+            firstPlayerName = data.firstPlayerName;
+            secondPlayerName = data.secondPlayerName;
+            thirdPlayerName = data.thirdPlayerName;
+
+            score1 = data.score1;
+            score2 = data.score2;
+            score3 = data.score3;
+        }
     }
 }
